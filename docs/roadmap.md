@@ -39,19 +39,24 @@ content[], triggers, onClick`. Tooltip başlığı ve metni ayrı alan değil;
 Target (selector) şeması: `{ "selector": "...", "text"?: "...", "nth"?: 0 }`.
 Bir target objesi varsa `selector` zorunlu.
 
-## Açık soru (Faz 0'da doğrulanacak)
+## Faz 0 sonucu (DOĞRULANDI)
 
-Tooltip step'i, target hiç gönderilmeden TASLAK olarak kaydedilebiliyor mu?
-Dokümantasyon selector'ı yayın (publish) aşamasında zorunlu tutuyor ama taslak
-toleransını açıkça yazmıyor. Faz 0'da gerçek bir çağrıyla test edilecek:
-- (a) target'sız taslak kaydı geçerli mi?
-- (b) değilse placeholder selector stratejisine geçilir.
-Ayrıca tooltip'ler arası ileri/geri gezinme (buton mu, otomatik mi) doğrulanacak.
+Gerçek API çağrısıyla test edildi (faz0_probe.py):
+
+- Target'sız tooltip step'i TASLAK olarak kaydediliyor (HTTP 200).
+- validate, target'sız step için hata veriyor: "Tooltip step has no target
+  element; the SDK skips it." Yani yayın (publish) için selector zorunlu,
+  taslak için değil.
+- Target eklenince validate ok=True.
+
+Sonuç (mevcut tasarım doğru): builder, selector'ı çözülemeyen step'lerde target'ı
+hiç göndermez; bu step'ler taslakta durur, validate onları tek tek listeler, sen
+panelde OpenPicker ile bağlarsın, sonra yayınlanır. Tekrar eden elementler
+selectors.yaml'dan otomatik çözülür.
 
 ## Fazlar
 
-- Faz 0 — API doğrulaması: token üret, `validate_api.py` çalıştır; tek test
-  flow'u + tooltip step'i oluşturup yukarıdaki açık soruları netleştir.
+- Faz 0 — API doğrulaması: TAMAMLANDI (faz0_probe.py). Bulgular yukarıda.
 - Faz 1 — Ara format + tek flow uçtan uca: `schema/flow.example.yaml` -> panelde
   doğru görünen bir flow. (Bu commit ile iskelet hazır.)
 - Faz 2 — Selector sözlüğü: tekrar eden elementleri `schema/selectors.yaml`'a taşı;
