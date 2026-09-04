@@ -21,6 +21,7 @@ import urllib.error
 import urllib.request
 
 BASE = os.environ.get("USERTOUR_BASE_URL", "https://api.usertour.io").rstrip("/")
+USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
 
 
 def load_token() -> str:
@@ -49,6 +50,7 @@ def call(method: str, path: str, body: dict | None = None):
     data = json.dumps(body).encode() if body is not None else None
     req = urllib.request.Request(url, data=data, method=method)
     req.add_header("Authorization", f"Bearer {TOKEN}")
+    req.add_header("User-Agent", USER_AGENT)
     req.add_header("Accept", "application/json")
     if data is not None:
         req.add_header("Content-Type", "application/json")
