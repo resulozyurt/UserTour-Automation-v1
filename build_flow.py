@@ -98,11 +98,21 @@ def main() -> int:
         print(f"Created flow {content_id} (draft version {version_id}).")
 
         report = client.validate_version(project_id, content_id, version_id)
+        real_errors = [
+            e
+            for e in (report.get("errors") or [])
+            if "no target element" not in (e.get("message") or "").lower()
+        ]
         if report.get("ok"):
             print("Validation: OK (publishable).")
+        elif not real_errors:
+            print(
+                "Validation: draft OK. The steps listed above still need a "
+                "selector before publishing (bind them in the panel)."
+            )
         else:
-            print("Validation errors:")
-            for err in report.get("errors", []) or []:
+            print("Validation errors (fix these):")
+            for err in real_errors:
                 print(f"  - {err.get('path')}: {err.get('message')}")
 
         if args.publish:
