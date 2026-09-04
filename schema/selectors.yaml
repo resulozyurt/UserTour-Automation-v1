@@ -1,0 +1,19 @@
+# Shared selector dictionary for elements that repeat across flows.
+# Fill each `selector` once (use Usertour's OpenPicker extension), and every
+# flow that references the key gets bound automatically at build time.
+#
+#   <key>:
+#     selector: "<CSS selector>"    # leave "" until you have it
+#     note: "<Turkce teknik not>"   # human note, ignored by the tool
+
+forms-menu:
+  selector: ""
+  note: "Sol navigasyon menusunde Forms ogesi"
+
+pencil-icon:
+  selector: ""
+  note: "Form satiri sonundaki duzenle (kalem) ikonu"
+
+save-button:
+  selector: ""
+  note: "Form editorunde Kaydet butonu"
