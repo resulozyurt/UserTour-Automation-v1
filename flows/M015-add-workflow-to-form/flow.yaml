@@ -1,119 +1,87 @@
 # Source: guidde "Add Workflow to Form" (see source.pdf)
 # Content is native American English. `note` fields are Turkish and ignored by the tool.
+# Each step auto-gets a "Next ->" button + onClick that advance to the next step.
+# Bold (**text**) renders in the brand color via the FieldPie theme.
 
 flow:
   name: "Merch-M015-Add Workflow to Form"
   # theme_id omitted -> uses USERTOUR_DEFAULT_THEME_ID (FieldPie Theme)
+  ending:
+    name: "Finish Screen"
+    title: "You just added a workflow to your form."
+    body: "Well done — your form can now trigger automated actions like emails, tasks, and visits."
+    home_url: "https://app.fieldpie.com"
+    home_label: "Go back to home"
+    button: "Finish"
+    support: true
 
 steps:
   - key: open-forms
     name: "Open Forms"
-    type: tooltip
     target: { ref: forms-menu, note: "Sol menüdeki Forms öğesi" }
-    placement: { side: right, align: start }
-    title: "Open Forms"
     body: "In the left menu, select **Forms**."
 
   - key: open-customize-forms
     name: "Open Customize Forms"
-    type: tooltip
     target: { selector: "", note: "Sağ üstteki Customize Forms ikonu" }
-    placement: { side: bottom, align: end }
-    title: "Customize forms"
     body: "Click the **Customize Forms** icon in the top-right corner."
 
   - key: edit-form
     name: "Edit a form"
-    type: tooltip
     target: { ref: pencil-icon, note: "Form satırındaki kalem (düzenle) ikonu" }
-    placement: { side: right, align: center }
-    title: "Edit a form"
     body: "Click the **pencil** icon next to the form you want to edit."
 
   - key: open-workflows
     name: "Open the Workflows menu"
-    type: tooltip
     target: { selector: "", note: "Form altındaki Workflows menüsü butonu" }
-    placement: { side: top, align: start }
-    title: "Open Workflows"
     body: "At the bottom of the form, open the **Workflows** menu to set up automated actions."
 
   - key: name-workflow
     name: "Name the workflow"
-    type: tooltip
     target: { selector: "", note: "Workflow dialogundaki Name alanı" }
-    placement: { side: bottom, align: start }
-    title: "Name your workflow"
     body: "Enter a name for the workflow. You can trigger it by a rule, a form submission, or a visit completion."
 
   - key: add-rule
     name: "Add a rule"
-    type: tooltip
     target: { selector: "", note: "Rules altındaki + (Add Rule) butonu" }
-    placement: { side: right, align: center }
-    title: "Add a rule"
     body: "Click **+** under Rules, then pick a rule from the list."
 
   - key: set-rule-value
     name: "Set the rule value"
-    type: tooltip
     target: { selector: "", note: "Kural değeri (state) açılır listesi - or. Is yes" }
-    placement: { side: bottom, align: start }
-    title: "Set the rule value"
     body: "Choose the value that triggers the rule (for example, **Is yes**)."
 
   - key: add-action
     name: "Add an action"
-    type: tooltip
     target: { selector: "", note: "Action altındaki + (Add Action) butonu" }
-    placement: { side: right, align: center }
-    title: "Add an action"
     body: "Click **+** under Action to define what happens when the rule is met."
 
   - key: choose-action-type
     name: "Choose an action type"
-    type: tooltip
     target: { selector: "", note: "Workflow Action dialogunda Action Type açılır listesi" }
-    placement: { side: bottom, align: start }
-    title: "Choose an action"
     body: "Pick an action type, such as **Send E-mail**, Create Task, Create Visit, or Update Client State."
 
   - key: set-action-timing
     name: "Set the action timing"
-    type: tooltip
     target: { selector: "", note: "Action Timing açılır listesi" }
-    placement: { side: bottom, align: end }
-    title: "Set the timing"
     body: "Choose when the action runs, such as **Job is completed** or **Form is saved**."
 
   - key: complete-fields
     name: "Complete the required fields"
-    type: tooltip
     target: { selector: "", note: "Workflow Action formundaki zorunlu alanlar (To, Subject, body)" }
-    placement: { side: left, align: start }
-    title: "Complete the fields"
     body: "Fill in all required fields for the action, such as the recipient, subject, and message."
 
   - key: confirm-action
     name: "Confirm the action"
-    type: tooltip
     target: { selector: "", note: "Workflow Action dialogundaki OK butonu" }
-    placement: { side: top, align: end }
-    title: "Confirm the action"
     body: "Click **OK** to save this action."
 
   - key: save-workflow
     name: "Save the workflow"
-    type: tooltip
     target: { selector: "", note: "Workflow dialogundaki SAVE butonu (form editörünün Save'i değil)" }
-    placement: { side: top, align: end }
-    title: "Save the workflow"
     body: "Click **Save** to create the workflow."
 
   - key: remove-workflow
     name: "Remove a workflow (optional)"
-    type: tooltip
     target: { selector: "", note: "Kural/aksiyon yanındaki çöp kutusu (trash) ikonları" }
-    placement: { side: right, align: start }
-    title: "Remove a workflow"
     body: "To remove a workflow, click the **trash bin** icons next to the rule or action."
