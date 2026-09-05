@@ -52,15 +52,15 @@ Return ONLY a JSON object of this exact shape:
 
 Rules:
 - Native American English for name/body/ending; basic level, concise, one sentence per body. No over-explaining.
-- Be faithful to the source flow: do not add or remove actions; keep the original order.
+- Be faithful and COMPLETE: every source frame that contains a user instruction becomes its own step; keep the original order. NEVER drop a frame that has an instruction — including optional ones (e.g. 'optional additional filters'). Only combine frames that set fields on the SAME row/screen, or collapse a group that repeats 3+ times into one summary step.
 - SKIP the intro/overview frame (usually numbered 00): start at the first real action. Never produce a welcome modal.
 - SKIP any frame whose description is empty or carries no user instruction.
-- If a frame's title does not match the action described, name the step after the action.
+- ALWAYS rename a step when its source title does not describe the action in the description. Guidde often uses filler titles like 'Proceed with Action', 'Enter Activation Value', 'Proceed To Next Step', 'Continue Workflow Setup' — replace these with a short name for what the user actually does.
 - If several fields are set on the same row/screen, combine them into one step.
 - If a group of steps repeats 3+ times, keep ONE representative example step, then collapse the rest into a SINGLE summary step with "type":"modal" (no target) that lists what to repeat.
 - Use target_ref for elements that recur across flows. Known keys:
 {_REFS_TEXT}
-  If a step targets one of these, set target_ref to that key; otherwise target_ref = null and give a short Turkish target_note.
+  Set target_ref ONLY when the step's target is EXACTLY that element. The left-menu 'Forms' item is forms-menu; any OTHER left-menu item (e.g. 'Bulk Operations', 'Tasks', 'Visits') must be target_ref=null with a Turkish target_note. Never map a different element onto a known ref.
 - Never invent CSS selectors; a human binds them later.
 - ending.title and ending.body: short, specific to this tutorial.
 """
