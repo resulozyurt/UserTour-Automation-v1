@@ -109,10 +109,18 @@
   <!-- SETTINGS -->
   <section id="s-settings" class="hidden">
     <div class="card">
-      <label>OpenAI modeli</label>
-      <input type="text" id="setModel" placeholder="gpt-4o-mini">
-      <div style="margin-top:12px"><label>OpenAI API anahtarı (değiştirmek istersen)</label>
-        <input type="password" id="setKey" placeholder="sk-…"></div>
+      <label>Sağlayıcı (LLM)</label>
+      <select id="setProvider" onchange="onProvider()">
+        <option value="openai">OpenAI (GPT)</option>
+        <option value="anthropic">Anthropic (Claude)</option>
+      </select>
+      <div style="margin-top:12px"><label id="keyLabel">API anahtarı</label>
+        <input type="password" id="setKey" placeholder="anahtarı yapıştır (yalnızca değiştireceksen)"></div>
+      <div class="row" style="margin-top:12px">
+        <div style="flex:2"><label>Model</label>
+          <select id="setModel"><option value="">— önce &quot;Modelleri getir&quot; —</option></select></div>
+        <div style="max-width:160px;align-self:flex-end"><button class="btn sec" onclick="fetchModels()">Modelleri getir</button></div>
+      </div>
       <div class="small muted" id="setStatus" style="margin:10px 0"></div>
       <button class="btn" onclick="saveSettings()">Kaydet</button>
     </div>
@@ -235,17 +243,44 @@ async function showFlow(slug){
 }
 
 // ---- settings ----
+let SETTINGS={};
 async function loadSettings(){
-  const d=await (await fetch('/api/settings')).json();
-  document.getElementById('setModel').value=d.model||'';
-  document.getElementById('setStatus').innerHTML=
-    'OpenAI anahtarı: '+(d.openai_set?'<span class="ok">tanımlı ✓</span>':'<span class="err">yok</span>')+
-    ' · Usertour token: '+(d.usertour_set?'<span class="ok">tanımlı ✓</span>':'<span class="err">yok</span>');
+  SETTINGS=await (await fetch('/api/settings')).json();
+  document.getElementById('setProvider').value=SETTINGS.provider||'openai';
+  const sel=document.getElementById('setModel');
+  if(SETTINGS.model){ sel.innerHTML=`<option value="${SETTINGS.model}">${SETTINGS.model} (kayıtlı)</option>`; sel.value=SETTINGS.model; }
+  onProvider();
+}
+function onProvider(){
+  const p=document.getElementById('setProvider').value;
+  document.getElementById('keyLabel').textContent=(p==='anthropic'?'Anthropic':'OpenAI')+' API anahtarı';
+  const set=p==='anthropic'?SETTINGS.anthropic_set:SETTINGS.openai_set;
+  document.getElementById('setStatus').innerHTML='Anahtar: '+(set?'<span class="ok">tanımlı ✓</span>':'<span class="err">yok</span>')
+    +' · Usertour: '+(SETTINGS.usertour_set?'<span class="ok">✓</span>':'<span class="err">yok</span>');
+}
+async function fetchModels(){
+  const p=document.getElementById('setProvider').value, key=document.getElementById('setKey').value;
+  const st=document.getElementById('setStatus'); st.innerHTML='<span class="spin"></span> modeller getiriliyor…';
+  try{
+    const r=await fetch('/api/models',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({provider:p,key})});
+    const d=await r.json();
+    if(!r.ok){ st.innerHTML='<span class="err">'+(d.error||'hata')+'</span>'; return; }
+    const sel=document.getElementById('setModel');
+    sel.innerHTML=d.models.map(m=>`<option value="${m}">${m}</option>`).join('');
+    const pref=p==='anthropic' ? d.models.find(m=>m.includes('sonnet')) : (d.models.find(m=>m==='gpt-4o')||d.models.find(m=>m.includes('gpt-4o')));
+    if(pref) sel.value=pref;
+    st.innerHTML='<span class="ok">'+d.models.length+' model bulundu — birini seç ve Kaydet.</span>';
+  }catch(e){ st.innerHTML='<span class="err">Hata: '+e+'</span>'; }
 }
 async function saveSettings(){
-  const payload={model:document.getElementById('setModel').value, openai_key:document.getElementById('setKey').value};
+  const p=document.getElementById('setProvider').value;
+  const payload={provider:p, model:document.getElementById('setModel').value};
+  const key=document.getElementById('setKey').value;
+  if(key) payload[p==='anthropic'?'anthropic_key':'openai_key']=key;
   await fetch('/api/settings',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
-  document.getElementById('setKey').value=''; loadSettings();
+  document.getElementById('setKey').value='';
+  await loadSettings();
+  document.getElementById('setStatus').innerHTML='<span class="ok">Kaydedildi ✓</span>';
 }
 </script>
 </body>

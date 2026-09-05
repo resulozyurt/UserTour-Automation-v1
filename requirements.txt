@@ -3,4 +3,5 @@ PyYAML>=6.0
 python-dotenv>=1.0
 pdfplumber>=0.11
 openai>=1.0
+anthropic>=0.39
 flask>=3.0

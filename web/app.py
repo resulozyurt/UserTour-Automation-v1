@@ -22,7 +22,7 @@ import yaml
 from flask import Flask, jsonify, render_template, request
 
 from extract_pdf import extract
-from curate import curate, to_flow_doc, KNOWN_REFS, DEFAULT_MODEL
+from curate import curate, to_flow_doc, KNOWN_REFS, DEFAULT_MODEL, DEFAULT_PROVIDER
 from newflow import auto_number, slugify
 
 UPLOADS = ROOT / "web" / "_uploads"
@@ -45,12 +45,13 @@ def api_upload():
     pdf_path = UPLOADS / f"{token}.pdf"
     f.save(pdf_path)
     use_llm = request.form.get("use_llm", "1") != "0"
-    model = os.environ.get("OPENAI_MODEL", DEFAULT_MODEL)
+    provider = os.environ.get("LLM_PROVIDER", DEFAULT_PROVIDER)
+    model = os.environ.get("LLM_MODEL") or os.environ.get("OPENAI_MODEL", DEFAULT_MODEL)
     try:
         raw = extract(str(pdf_path))
         if not raw:
             return jsonify({"error": "No steps found in this PDF."}), 400
-        curated = curate(raw, f.filename, use_llm=use_llm, model=model)
+        curated = curate(raw, f.filename, use_llm=use_llm, model=model, provider=provider)
     except Exception as exc:
         return jsonify({"error": f"{type(exc).__name__}: {exc}"}), 400
     number = auto_number()
@@ -151,17 +152,46 @@ def _update_env(key: str, val: str | None):
 @app.get("/api/settings")
 def get_settings():
     return jsonify({
-        "model": os.environ.get("OPENAI_MODEL", DEFAULT_MODEL),
+        "provider": os.environ.get("LLM_PROVIDER", DEFAULT_PROVIDER),
+        "model": os.environ.get("LLM_MODEL") or os.environ.get("OPENAI_MODEL", DEFAULT_MODEL),
         "openai_set": bool(os.environ.get("OPENAI_API_KEY")),
+        "anthropic_set": bool(os.environ.get("ANTHROPIC_API_KEY")),
         "usertour_set": bool(os.environ.get("USERTOUR_API_TOKEN")),
     })
+
+
+@app.post("/api/models")
+def api_models():
+    data = request.get_json(force=True)
+    provider = data.get("provider", "openai")
+    key = (data.get("key") or "").strip() or None
+    try:
+        if provider == "anthropic":
+            import anthropic
+            client = anthropic.Anthropic(api_key=key or os.environ.get("ANTHROPIC_API_KEY"))
+            ids = sorted(m.id for m in client.models.list(limit=100).data if m.id.startswith("claude"))
+        else:
+            from openai import OpenAI
+            client = OpenAI(api_key=key or os.environ.get("OPENAI_API_KEY"))
+            bad = ("instruct", "realtime", "audio", "embedding", "transcribe",
+                   "tts", "image", "moderation", "search", "dall")
+            ids = sorted({
+                m.id for m in client.models.list().data
+                if (m.id.startswith(("gpt-", "o1", "o3", "o4")))
+                and not any(b in m.id for b in bad)
+            })
+        return jsonify({"models": ids})
+    except Exception as exc:
+        return jsonify({"error": f"{type(exc).__name__}: {exc}"}), 400
 
 
 @app.post("/api/settings")
 def set_settings():
     data = request.get_json(force=True)
+    _update_env("LLM_PROVIDER", (data.get("provider") or "").strip() or None)
+    _update_env("LLM_MODEL", (data.get("model") or "").strip() or None)
     _update_env("OPENAI_API_KEY", (data.get("openai_key") or "").strip() or None)
-    _update_env("OPENAI_MODEL", (data.get("model") or "").strip() or None)
+    _update_env("ANTHROPIC_API_KEY", (data.get("anthropic_key") or "").strip() or None)
     return jsonify({"ok": True})
 
 

@@ -27,7 +27,8 @@ KNOWN_REFS = {
     "save-button": "Save button",
 }
 
-DEFAULT_MODEL = os.environ.get("OPENAI_MODEL", "gpt-4o-mini")
+DEFAULT_PROVIDER = os.environ.get("LLM_PROVIDER", "openai")
+DEFAULT_MODEL = os.environ.get("LLM_MODEL") or os.environ.get("OPENAI_MODEL", "gpt-4o")
 
 _REFS_TEXT = "\n".join(f'  - "{k}": {v}' for k, v in KNOWN_REFS.items())
 
@@ -66,7 +67,18 @@ Rules:
 """
 
 
-def curate_llm(raw_steps: list[dict], source_name: str, model: str = DEFAULT_MODEL) -> dict:
+def _extract_json(text: str) -> dict:
+    text = text.strip()
+    if text.startswith("```"):
+        text = re.sub(r"^```[a-zA-Z]*\n?", "", text)
+        text = re.sub(r"\n?```$", "", text).strip()
+    a, b = text.find("{"), text.rfind("}")
+    if a >= 0 and b > a:
+        text = text[a:b + 1]
+    return json.loads(text)
+
+
+def curate_openai(raw_steps: list[dict], source_name: str, model: str) -> dict:
     from openai import OpenAI
 
     client = OpenAI()  # reads OPENAI_API_KEY
@@ -81,6 +93,29 @@ def curate_llm(raw_steps: list[dict], source_name: str, model: str = DEFAULT_MOD
         ],
     )
     return json.loads(resp.choices[0].message.content)
+
+
+def curate_anthropic(raw_steps: list[dict], source_name: str, model: str) -> dict:
+    import anthropic
+
+    client = anthropic.Anthropic()  # reads ANTHROPIC_API_KEY
+    user = {"source": source_name, "raw_steps": raw_steps}
+    msg = client.messages.create(
+        model=model,
+        max_tokens=4096,
+        temperature=0.2,
+        system=SYSTEM_PROMPT + "\n\nReturn ONLY the JSON object — no prose, no code fences.",
+        messages=[{"role": "user", "content": json.dumps(user, ensure_ascii=False)}],
+    )
+    text = "".join(getattr(b, "text", "") for b in msg.content)
+    return _extract_json(text)
+
+
+def curate_llm(raw_steps: list[dict], source_name: str, model: str = DEFAULT_MODEL,
+               provider: str = DEFAULT_PROVIDER) -> dict:
+    if provider == "anthropic":
+        return curate_anthropic(raw_steps, source_name, model)
+    return curate_openai(raw_steps, source_name, model)
 
 
 def _slug(text: str) -> str:
@@ -113,9 +148,9 @@ def curate_deterministic(raw_steps: list[dict], source_name: str) -> dict:
 
 
 def curate(raw_steps: list[dict], source_name: str, use_llm: bool = True,
-           model: str = DEFAULT_MODEL) -> dict:
+           model: str = DEFAULT_MODEL, provider: str = DEFAULT_PROVIDER) -> dict:
     if use_llm:
-        return curate_llm(raw_steps, source_name, model)
+        return curate_llm(raw_steps, source_name, model, provider)
     return curate_deterministic(raw_steps, source_name)
 
 
