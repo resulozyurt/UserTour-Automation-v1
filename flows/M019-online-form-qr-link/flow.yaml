@@ -1,0 +1,40 @@
+# Source: guidde "Creating an Online Form (QR or link)" (see source.pdf)
+flow:
+  name: "Merch-M019-Create Online Form (QR or Link)"
+  ending:
+    name: "Finish Screen"
+    title: "Your online form is ready to share."
+    body: "Anyone can now fill it out through the QR code or link."
+    home_url: "https://app.fieldpie.com"
+    home_label: "Go back to home"
+    button: "Finish"
+    support: true
+steps:
+  - key: open-forms
+    name: "Open Forms"
+    target: { ref: forms-menu, note: "Sol menüdeki Forms öğesi" }
+    body: "In the left menu, select **Forms**."
+  - key: open-customize-forms
+    name: "Open Customize Forms"
+    target: { ref: customize-forms-icon, note: "Sağ üstteki Customize Forms ikonu" }
+    body: "Click the **Customize Forms** icon in the top-right corner."
+  - key: open-custom-form
+    name: "Open a custom form"
+    target: { ref: custom-form-plus, note: "+ ile yeni form; kalem ile düzenle" }
+    body: "Click the **+** to create a custom form, or the **pencil** icon to edit an existing one."
+  - key: enable-online-form
+    name: "Enable Online Form"
+    target: { selector: "", note: "Online Form seçeneği (checkbox)" }
+    body: "Check the **Online Form** option to make the form available online."
+  - key: generate-qr
+    name: "Generate a QR code"
+    target: { selector: "", note: "QR kod oluştur butonu" }
+    body: "Generate a **QR code** for the form."
+  - key: copy-link
+    name: "Copy the form link"
+    target: { selector: "", note: "Copy Form Link butonu" }
+    body: "Click **Copy Form Link** to copy the form URL and share it."
+  - key: share-form
+    name: "Share the form"
+    target: { selector: "", note: "Paylaşım seçenekleri (X, Facebook, LinkedIn, Email, WhatsApp)" }
+    body: "You can also share the form directly via **X, Facebook, LinkedIn, Email, or WhatsApp**."

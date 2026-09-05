@@ -1,0 +1,36 @@
+# Source: guidde "Form Data Collection Example" (see source.pdf)
+flow:
+  name: "Merch-M016-Form Data Collection Example"
+  ending:
+    name: "Finish Screen"
+    title: "You just built a form to collect field data."
+    body: "Nice work — your team can now capture barcodes, photos, signatures, prices, and more."
+    home_url: "https://app.fieldpie.com"
+    home_label: "Go back to home"
+    button: "Finish"
+    support: true
+steps:
+  - key: open-forms
+    name: "Open Forms"
+    target: { ref: forms-menu, note: "Sol menüdeki Forms öğesi" }
+    body: "In the left menu, select **Forms**."
+  - key: open-customize-forms
+    name: "Open Customize Forms"
+    target: { ref: customize-forms-icon, note: "Sağ üstteki Customize Forms ikonu" }
+    body: "Click the **Customize Forms** icon in the top-right corner."
+  - key: open-custom-form
+    name: "Open a custom form"
+    target: { ref: custom-form-plus, note: "+ ile yeni form; kalem ile düzenle" }
+    body: "Click the **+** to create a custom form, or the **pencil** icon to edit an existing one."
+  - key: add-field
+    name: "Add a field"
+    target: { selector: "", note: "Sayfa altında + Add Field butonu" }
+    body: "Scroll to the bottom and click **+ Add Field**, then enter a name for the field."
+  - key: choose-field-type
+    name: "Choose the field type"
+    target: { selector: "", note: "Alan tipi açılır listesi (ör. Barcode)" }
+    body: "Pick the field type from the list — for example, **Barcode** to scan barcodes."
+  - key: add-remaining-fields
+    name: "Add the rest of your fields"
+    type: modal
+    body: "Add the other fields the same way, each with its type: **Product** and **Price** (Single Line Text), **Is the Price Correct** (Selection), **Shelf or Promo Price** (Money), **Photo** (Photo), and **Signature** (Signature)."

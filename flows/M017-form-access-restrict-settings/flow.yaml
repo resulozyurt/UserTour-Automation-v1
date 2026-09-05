@@ -1,0 +1,40 @@
+# Source: guidde "Form Access, Visibility & Restrict Settings" (see source.pdf)
+flow:
+  name: "Merch-M017-Form Access and Restrict Settings"
+  ending:
+    name: "Finish Screen"
+    title: "You just set your form's access rules."
+    body: "Your form now appears only where and to whom it should."
+    home_url: "https://app.fieldpie.com"
+    home_label: "Go back to home"
+    button: "Finish"
+    support: true
+steps:
+  - key: open-forms
+    name: "Open Forms"
+    target: { ref: forms-menu, note: "Sol menüdeki Forms öğesi" }
+    body: "In the left menu, select **Forms**."
+  - key: open-customize-forms
+    name: "Open Customize Forms"
+    target: { ref: customize-forms-icon, note: "Sağ üstteki Customize Forms ikonu" }
+    body: "Click the **Customize Forms** icon in the top-right corner."
+  - key: open-custom-form
+    name: "Open a custom form"
+    target: { ref: custom-form-plus, note: "+ ile yeni form; kalem ile düzenle" }
+    body: "Click the **+** to create a custom form, or the **pencil** icon to edit an existing one."
+  - key: set-visibility
+    name: "Set visibility"
+    target: { selector: "", note: "Visibility ayarı (During Visit / Out of Visit)" }
+    body: "Under **Visibility**, choose whether the form is available **During Visit** or **Out of Visit**."
+  - key: restrict-work-order
+    name: "Restrict by work order type"
+    target: { selector: "", note: "Restrict to Work Order Type ayarı" }
+    body: "Use **Restrict to Work Order Type** to choose which work order types can open the form — for example, Promotion Setup only, Regular only, or both."
+  - key: restrict-main-customer
+    name: "Restrict by main customer"
+    target: { selector: "", note: "Restrict to Main Customer ayarı" }
+    body: "Use **Restrict to Main Customer** to limit the form to one or more main customers."
+  - key: restrict-user-access
+    name: "Restrict user access"
+    target: { selector: "", note: "Restrict User Access ayarı" }
+    body: "Use **Restrict User Access** to choose which users can view and complete the form."

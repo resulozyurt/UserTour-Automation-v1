@@ -257,20 +257,27 @@ def build_flow(flow_path: str | Path, selectors_path: str | Path | None = None,
         if actions:
             content.append(_button_columns(NEXT_LABEL, actions, top=12))
 
+        step_type = s.get("type", "tooltip")
+        if step_type == "modal":
+            placement = {"position": "center", "offsetX": 0, "offsetY": 0, "backdrop": True}
+        else:
+            placement = _tooltip_placement(s.get("side", "bottom"), s.get("align", "center"))
+
         step: dict[str, Any] = {
             "key": key,
             "name": s.get("name") or key,
-            "type": s.get("type", "tooltip"),
-            "placement": _tooltip_placement(s.get("side", "bottom"), s.get("align", "center")),
+            "type": step_type,
+            "placement": placement,
             "skippable": True,
             "explicitCompletionStep": False,
             "content": content,
         }
-        target = _resolve_target(s.get("target"), selectors, key, unresolved)
-        if target:
-            step["target"] = target
-        if actions:
-            step["onClick"] = actions
+        if step_type != "modal":  # modals float in the center, no target/onClick
+            target = _resolve_target(s.get("target"), selectors, key, unresolved)
+            if target:
+                step["target"] = target
+            if actions:
+                step["onClick"] = actions
         steps_out.append(step)
 
     if ending:

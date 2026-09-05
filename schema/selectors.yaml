@@ -17,3 +17,11 @@ pencil-icon:
 save-button:
   selector: ""
   note: "Form editorunde Kaydet butonu"
+
+customize-forms-icon:
+  selector: ""
+  note: "Sağ üstteki Customize Forms ikonu"
+
+custom-form-plus:
+  selector: ""
+  note: "Custom Forms bölümünde + (yeni form) ikonu; alternatif: kalem ile düzenle"

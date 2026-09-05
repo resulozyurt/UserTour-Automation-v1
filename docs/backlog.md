@@ -10,6 +10,10 @@ As flows are generated, they are listed under **Generated** with their name.
 ## Generated
 
 - `Merch-M015` — Add Workflow to Form — (Workflow)
+- `Merch-M016` — Form Data Collection Example — (Form)
+- `Merch-M017` — Form Access and Restrict Settings — (Form)
+- `Merch-M018` — Form Data Export — (Form)
+- `Merch-M019` — Create Online Form (QR or Link) — (Form)
 
 ## To do
 

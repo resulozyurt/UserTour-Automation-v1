@@ -1,0 +1,44 @@
+# Source: guidde "Form Data Export" (see source.pdf)
+flow:
+  name: "Merch-M018-Form Data Export"
+  ending:
+    name: "Finish Screen"
+    title: "You just exported your form data."
+    body: "Your records are ready as an Excel or CSV file."
+    home_url: "https://app.fieldpie.com"
+    home_label: "Go back to home"
+    button: "Finish"
+    support: true
+steps:
+  - key: open-forms
+    name: "Open Forms"
+    target: { ref: forms-menu, note: "Sol menüdeki Forms öğesi" }
+    body: "In the left menu, select **Forms**."
+  - key: select-form
+    name: "Select a form"
+    target: { selector: "", note: "Form filtresi açılır listesi" }
+    body: "Open the **Form** filter and select the form you want to export."
+  - key: choose-period
+    name: "Choose the period"
+    target: { selector: "", note: "Period (dönem) filtresi" }
+    body: "Choose the **period** range you want to export."
+  - key: apply-filters
+    name: "Apply extra filters (optional)"
+    target: { selector: "", note: "Ek filtreler (opsiyonel)" }
+    body: "Apply any extra filters you need (optional)."
+  - key: search
+    name: "Search"
+    target: { selector: "", note: "Search butonu" }
+    body: "Click **Search** to apply the filters."
+  - key: select-records
+    name: "Select the records"
+    target: { selector: "", note: "Soldaki kayıt seçim checkbox'ları" }
+    body: "Use the checkboxes on the left to select the records, or select all."
+  - key: open-export
+    name: "Open export"
+    target: { selector: "", note: "Sağ üstteki export ikonu" }
+    body: "Click the **export** icon in the top-right corner."
+  - key: export-format
+    name: "Export as Excel or CSV"
+    target: { selector: "", note: "XLSX / CSV seçimi" }
+    body: "Export the selected records as **XLSX** or **CSV**."
