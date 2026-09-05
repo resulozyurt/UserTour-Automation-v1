@@ -62,6 +62,21 @@ Build a flow from an intermediate file. A dry run assembles the JSON into
     validate_api.py            Connectivity / discovery smoke test
     build_flow.py              Build (and optionally upload) one flow
 
+## One command per PDF (self-service)
+
+Set your OpenAI key once in `.env` (`OPENAI_API_KEY`), install deps
+(`pip install -r requirements.txt`), then for each tutorial:
+
+    python newflow.py "path/to/tutorial.pdf"
+
+This extracts the steps, curates them with your own OpenAI key (native English,
+fixes titles that do not match the action, summarizes repeated groups, adds the
+ending), auto-numbers the flow (next `Merch-M###`), writes `flows/<slug>/flow.yaml`,
+archives the PDF, and uploads a draft to Usertour. Then bind selectors in the panel.
+
+Flags: `--no-llm` (free, no rewriting), `--no-build` (write the flow.yaml only),
+`--model <name>`, `--number <N>` (skip auto-numbering).
+
 ## Creating a flow from a PDF
 
 1. Drop the guidde PDF in the project (e.g. under `flows/<slug>/source.pdf`).
@@ -84,5 +99,7 @@ Build a flow from an intermediate file. A dry run assembles the JSON into
     list_flows.py         List flows with publish status (for numbering)
     dump_flow.py          Dump an existing flow's JSON (to copy its structure)
     extract_pdf.py        guidde PDF -> raw step YAML
+    curate.py             raw steps -> curated flow (OpenAI, your key)
+    newflow.py            one command: PDF -> curated draft
     build_flow.py         Build (and optionally publish) a flow
     set_bold_color.py     Brand-color bold via theme CSS (needs Growth plan)
