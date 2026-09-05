@@ -61,3 +61,28 @@ Build a flow from an intermediate file. A dry run assembles the JSON into
     src/flow_builder.py        Intermediate format -> Usertour step payload
     validate_api.py            Connectivity / discovery smoke test
     build_flow.py              Build (and optionally upload) one flow
+
+## Creating a flow from a PDF
+
+1. Drop the guidde PDF in the project (e.g. under `flows/<slug>/source.pdf`).
+2. Extract the raw steps:
+
+       python extract_pdf.py "flows/<slug>/source.pdf"
+
+   This writes `source.raw.yaml` (step number, title, description) next to it.
+3. Curate `raw.yaml` into a final `flow.yaml`: native English wording, fix
+   titles that do not match the action, skip intro/empty frames, reference
+   repeated elements from `schema/selectors.yaml`, and add the `ending` modal.
+4. Build the draft and bind selectors in the panel:
+
+       python build_flow.py flows/<slug>/flow.yaml
+
+## Helper scripts
+
+    validate_api.py       Connectivity / discovery smoke test
+    faz0_probe.py         One-off API behavior probe
+    list_flows.py         List flows with publish status (for numbering)
+    dump_flow.py          Dump an existing flow's JSON (to copy its structure)
+    extract_pdf.py        guidde PDF -> raw step YAML
+    build_flow.py         Build (and optionally publish) a flow
+    set_bold_color.py     Brand-color bold via theme CSS (needs Growth plan)

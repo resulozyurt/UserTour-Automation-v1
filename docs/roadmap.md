@@ -61,8 +61,8 @@ selectors.yaml'dan otomatik çözülür.
   doğru görünen bir flow. (Bu commit ile iskelet hazır.)
 - Faz 2 — Selector sözlüğü: tekrar eden elementleri `schema/selectors.yaml`'a taşı;
   yeni flow'ların ortak adımları otomatik bağlansın.
-- Faz 3 — PDF -> ara YAML üretimi: guidde PDF'ini okuyup taslak flow üret
-  (gözden geçirmeye açık; otomatik yayınlamaz).
+- Faz 3 — PDF -> ara YAML üretimi: extract_pdf.py ile guidde PDF'ten raw.yaml
+  (deterministik). Curation (native English, başlık düzeltme, ending) elle/Claude ile.
 - Faz 4 — Akış: PDF ver -> taslak üret -> gözden geçir -> yükle -> panelde yalnız
   yeni selector'ları doldur -> yayınla.
 

@@ -1,0 +1,51 @@
+source: source.pdf
+steps:
+- n: '00'
+  title: Introduction
+  text: This tutorial guides you through adding and deleting workflows in FieldPie
+  goto_url: app2.fieldpie.com
+- n: '01'
+  title: Access Forms Section
+  text: From the left navigation menu, select "Forms".
+- n: '02'
+  title: Proceed To Next Step
+  text: Click the Form icon in the upper-right corner.
+- n: '03'
+  title: Open Custom Forms Section
+  text: Click the pencil icon next to the desired form to edit it.
+- n: '04'
+  title: Reopen Workflows Menu
+  text: Go to the bottom of the page and choose the workflow. With the workflows you can create various actions and send notificaitons based on the triggers you have created on the selected form.
+- n: '05'
+  title: Continue Workflow Setup
+  text: Enter a name for the workflow. You can create a workflow based on a selected rule, or set the trigger to a Form Submission or Visit Completion.
+- n: '06'
+  title: Select OOS Product Question
+  text: Select a rule from the list and add it.
+- n: '07'
+  title: Select Affirmative Response
+  text: Select a state from the list.
+- n: 08
+  title: Proceed in Workflow Steps
+  text: Click + to add an action.
+- n: 09
+  title: Collapse Current Section
+  text: ''
+- n: '10'
+  title: Choose Send Email Action
+  text: Add an action to define what should happen automatically when the rule is triggered. Depending on your workflow, you can choose to send an email, create a task, create a visit, send a client survey email, or update client state.
+- n: '11'
+  title: Select Job Completion Status
+  text: Select an action timing from the list.
+- n: '12'
+  title: Confirm Alert Title
+  text: Complete all required fields.
+- n: '13'
+  title: Confirm Alert Settings
+  text: Click OK to continue.
+- n: '14'
+  title: Continue Workflow Setup
+  text: Click Save to create the workflow.
+- n: '15'
+  title: Continue Workflow Setup
+  text: If you want to remove the workflow from the form, click the trash bin icons.
