@@ -23,7 +23,7 @@ from flask import Flask, jsonify, render_template, request
 
 from extract_pdf import extract
 from curate import curate, to_flow_doc, KNOWN_REFS, DEFAULT_MODEL, DEFAULT_PROVIDER
-from newflow import auto_number, slugify
+from newflow import auto_number, slugify, title_from_filename
 
 UPLOADS = ROOT / "web" / "_uploads"
 UPLOADS.mkdir(parents=True, exist_ok=True)
@@ -55,7 +55,7 @@ def api_upload():
     except Exception as exc:
         return jsonify({"error": f"{type(exc).__name__}: {exc}"}), 400
     number = auto_number()
-    title = (curated.get("title") or Path(f.filename).stem).strip()
+    title = title_from_filename(f.filename) or (curated.get("title") or "Flow").strip()
     return jsonify({
         "token": token,
         "number": number,

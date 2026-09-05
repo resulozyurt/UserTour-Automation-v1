@@ -25,6 +25,13 @@ from extract_pdf import extract
 from curate import curate, to_flow_doc, DEFAULT_MODEL
 
 
+def title_from_filename(name: str) -> str:
+    """Flow title comes from the PDF filename (your backlog topic name)."""
+    t = Path(name).stem.replace("_", " ").strip()
+    t = re.sub(r"\s*\(\d+\)\s*$", "", t)   # strip a trailing '(1)'
+    return re.sub(r"\s+", " ", t).strip()
+
+
 def slugify(text: str) -> str:
     return re.sub(r"[^a-z0-9]+", "-", (text or "flow").lower()).strip("-") or "flow"
 
@@ -81,7 +88,7 @@ def main() -> int:
         return 1
 
     curated = curate(raw, os.path.basename(args.pdf), use_llm=not args.no_llm, model=args.model)
-    title = (curated.get("title") or Path(args.pdf).stem).strip()
+    title = title_from_filename(args.pdf) or (curated.get("title") or "Flow").strip()
     flow_name = f"Merch-M{number:03d}-{title}"
     slug = f"M{number:03d}-{slugify(title)}"
 
