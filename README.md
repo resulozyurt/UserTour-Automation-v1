@@ -62,6 +62,14 @@ Build a flow from an intermediate file. A dry run assembles the JSON into
     validate_api.py            Connectivity / discovery smoke test
     build_flow.py              Build (and optionally upload) one flow
 
+## Local app (no terminal)
+
+One-time: double-click **setup.bat** (installs dependencies). Then open the app
+by double-clicking **start.bat** — a browser tab opens at http://127.0.0.1:5000.
+Drop a guidde PDF, review/edit the generated steps and texts, and click
+**Usertour'a taslak yükle** to create the draft. Set your OpenAI key from the
+Settings tab. No terminal needed after launch.
+
 ## One command per PDF (self-service)
 
 Set your OpenAI key once in `.env` (`OPENAI_API_KEY`), install deps

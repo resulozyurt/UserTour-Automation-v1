@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Usertour Flow Builder</title>
+<style>
+  :root{--bg:#f6f7f9;--card:#fff;--line:#e4e7eb;--ink:#1c2430;--muted:#6b7480;--brand:#018478;--brand2:#4f46e5}
+  *{box-sizing:border-box}
+  body{margin:0;font:14px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--ink)}
+  header{background:var(--card);border-bottom:1px solid var(--line);padding:14px 20px;display:flex;align-items:center;gap:18px;position:sticky;top:0;z-index:5}
+  header h1{font-size:16px;margin:0;font-weight:700}
+  nav button{background:none;border:0;padding:8px 12px;border-radius:8px;cursor:pointer;color:var(--muted);font-weight:600}
+  nav button.active{background:#eef2f7;color:var(--ink)}
+  main{max-width:900px;margin:22px auto;padding:0 20px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px;margin-bottom:16px}
+  .drop{border:2px dashed #cfd6de;border-radius:12px;padding:34px;text-align:center;color:var(--muted);cursor:pointer;transition:.15s}
+  .drop.hot{border-color:var(--brand);background:#f0fbf9;color:var(--ink)}
+  label{display:block;font-weight:600;margin:0 0 4px;font-size:13px}
+  input[type=text],textarea,select,input[type=password]{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:8px;font:inherit;background:#fff}
+  textarea{resize:vertical;min-height:46px}
+  .row{display:flex;gap:10px}.row>*{flex:1}
+  .btn{background:var(--brand2);color:#fff;border:0;padding:9px 16px;border-radius:8px;font-weight:600;cursor:pointer}
+  .btn.sec{background:#eef2f7;color:var(--ink)}
+  .btn.ghost{background:none;color:var(--muted);border:1px solid var(--line)}
+  .btn:disabled{opacity:.5;cursor:default}
+  .muted{color:var(--muted)}.small{font-size:12px}
+  .step{border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:10px;background:#fcfdfe}
+  .step h4{margin:0 0 8px;font-size:13px;color:var(--muted);display:flex;justify-content:space-between}
+  .pill{display:inline-block;background:#eef2f7;border-radius:20px;padding:2px 10px;font-size:12px}
+  .ok{color:var(--brand)}.err{color:#c0392b}
+  pre{white-space:pre-wrap;background:#0f172a;color:#d1e0ee;padding:12px;border-radius:8px;font-size:12px;overflow:auto}
+  .hidden{display:none}
+  .flowrow{display:flex;justify-content:space-between;padding:10px 12px;border:1px solid var(--line);border-radius:8px;margin-bottom:8px;cursor:pointer;background:#fff}
+  .flowrow:hover{border-color:var(--brand2)}
+  .spin{display:inline-block;width:16px;height:16px;border:2px solid #ccc;border-top-color:var(--brand2);border-radius:50%;animation:s .8s linear infinite;vertical-align:-3px}
+  @keyframes s{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<header>
+  <h1>🚦 Usertour Flow Builder</h1>
+  <nav>
+    <button id="t-new" class="active" onclick="tab('new')">Yeni Flow</button>
+    <button id="t-flows" onclick="tab('flows')">Flow'lar</button>
+    <button id="t-settings" onclick="tab('settings')">Ayarlar</button>
+  </nav>
+</header>
+<main>
+
+  <!-- NEW -->
+  <section id="s-new">
+    <div class="card" id="uploadCard">
+      <div class="drop" id="drop">
+        <div style="font-size:15px;font-weight:600">PDF'i buraya sürükle veya tıkla</div>
+        <div class="small muted" style="margin-top:6px">guidde tutorial PDF'i · her PDF bir flow olur</div>
+        <input type="file" id="file" accept="application/pdf" class="hidden">
+      </div>
+      <div style="margin-top:12px" class="small">
+        <label style="display:inline-flex;gap:6px;align-items:center;font-weight:500">
+          <input type="checkbox" id="useLlm" checked style="width:auto"> OpenAI ile cilala (kapalı = ham metin, ücretsiz)
+        </label>
+      </div>
+      <div id="uploadMsg" class="small muted" style="margin-top:10px"></div>
+    </div>
+
+    <div id="editor" class="hidden">
+      <div class="card">
+        <label>Flow adı</label>
+        <input type="text" id="flowName">
+        <div class="small muted" id="rawInfo" style="margin-top:6px"></div>
+      </div>
+      <div class="card">
+        <label>Kapanış ekranı (Finish)</label>
+        <div class="row">
+          <div><label class="small">Başlık</label><input type="text" id="endTitle"></div>
+        </div>
+        <div style="margin-top:8px"><label class="small">Metin</label><textarea id="endBody"></textarea></div>
+      </div>
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+          <label style="margin:0">Adımlar (<span id="stepCount">0</span>)</label>
+          <button class="btn ghost small" onclick="addStep()">+ Adım ekle</button>
+        </div>
+        <div id="steps"></div>
+      </div>
+      <div class="card">
+        <div class="row">
+          <button class="btn" onclick="build(true)">Usertour'a taslak yükle</button>
+          <button class="btn sec" onclick="build(false)">Sadece kaydet (yükleme)</button>
+        </div>
+        <div id="buildOut" style="margin-top:12px"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FLOWS -->
+  <section id="s-flows" class="hidden">
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <label style="margin:0">Üretilen flow'lar</label>
+        <button class="btn ghost small" onclick="loadFlows()">Yenile</button>
+      </div>
+      <div id="flowList" class="muted small">Yükleniyor…</div>
+    </div>
+    <div id="flowDetail"></div>
+  </section>
+
+  <!-- SETTINGS -->
+  <section id="s-settings" class="hidden">
+    <div class="card">
+      <label>OpenAI modeli</label>
+      <input type="text" id="setModel" placeholder="gpt-4o-mini">
+      <div style="margin-top:12px"><label>OpenAI API anahtarı (değiştirmek istersen)</label>
+        <input type="password" id="setKey" placeholder="sk-…"></div>
+      <div class="small muted" id="setStatus" style="margin:10px 0"></div>
+      <button class="btn" onclick="saveSettings()">Kaydet</button>
+    </div>
+  </section>
+</main>
+
+<script>
+const REFS = {{ refs|tojson }};
+let CURRENT = null;   // {token, steps, ...}
+
+function tab(name){
+  for(const n of ['new','flows','settings']){
+    document.getElementById('s-'+n).classList.toggle('hidden', n!==name);
+    document.getElementById('t-'+n).classList.toggle('active', n===name);
+  }
+  if(name==='flows') loadFlows();
+  if(name==='settings') loadSettings();
+}
+
+// ---- upload ----
+const drop=document.getElementById('drop'), file=document.getElementById('file');
+drop.onclick=()=>file.click();
+file.onchange=()=>file.files[0]&&upload(file.files[0]);
+['dragover','dragenter'].forEach(e=>drop.addEventListener(e,ev=>{ev.preventDefault();drop.classList.add('hot')}));
+['dragleave','drop'].forEach(e=>drop.addEventListener(e,ev=>{ev.preventDefault();drop.classList.remove('hot')}));
+drop.addEventListener('drop',ev=>{const f=ev.dataTransfer.files[0]; if(f) upload(f)});
+
+async function upload(f){
+  const msg=document.getElementById('uploadMsg');
+  msg.innerHTML='<span class="spin"></span> İşleniyor: ayrıştırma + kürasyon…';
+  document.getElementById('editor').classList.add('hidden');
+  const fd=new FormData(); fd.append('pdf',f); fd.append('use_llm', document.getElementById('useLlm').checked?'1':'0');
+  try{
+    const r=await fetch('/api/upload',{method:'POST',body:fd});
+    const d=await r.json();
+    if(!r.ok){ msg.innerHTML='<span class="err">Hata: '+(d.error||'bilinmeyen')+'</span>'; return; }
+    CURRENT=d; msg.innerHTML='<span class="ok">✓ '+f.name+' işlendi.</span>';
+    renderEditor(d);
+  }catch(e){ msg.innerHTML='<span class="err">Hata: '+e+'</span>'; }
+}
+
+function renderEditor(d){
+  document.getElementById('flowName').value=d.flow_name;
+  document.getElementById('endTitle').value=(d.ending&&d.ending.title)||'';
+  document.getElementById('endBody').value=(d.ending&&d.ending.body)||'';
+  document.getElementById('rawInfo').textContent=d.raw_count+' ham kare okundu → '+d.steps.length+' adım üretildi (No: M'+String(d.number).padStart(3,'0')+')';
+  renderSteps(d.steps);
+  document.getElementById('editor').classList.remove('hidden');
+  document.getElementById('buildOut').innerHTML='';
+}
+
+function renderSteps(steps){
+  const box=document.getElementById('steps'); box.innerHTML='';
+  steps.forEach((s,i)=>box.appendChild(stepCard(s,i)));
+  document.getElementById('stepCount').textContent=steps.length;
+}
+function stepCard(s,i){
+  const el=document.createElement('div'); el.className='step';
+  const opts=['<option value="">(manuel selector)</option>'].concat(REFS.map(r=>`<option value="${r}">${r}</option>`)).join('');
+  el.innerHTML=`
+   <h4><span>Adım ${i+1}</span><button class="btn ghost small" data-del="${i}">Sil</button></h4>
+   <div class="row">
+     <div><label class="small">İsim</label><input type="text" data-f="name" value="${esc(s.name||'')}"></div>
+     <div style="max-width:150px"><label class="small">Tip</label><select data-f="type"><option value="tooltip">tooltip</option><option value="modal">modal (özet)</option></select></div>
+   </div>
+   <div style="margin-top:8px"><label class="small">Tooltip metni (İngilizce, **bold** = marka rengi)</label><textarea data-f="body">${esc(s.body||'')}</textarea></div>
+   <div class="row" style="margin-top:8px">
+     <div><label class="small">Hedef element (ortak)</label><select data-f="target_ref">${opts}</select></div>
+     <div><label class="small">Hedef notu (TR, manuel bağlama için)</label><input type="text" data-f="target_note" value="${esc(s.target_note||'')}"></div>
+   </div>`;
+  el.querySelector('[data-f="type"]').value=s.type||'tooltip';
+  el.querySelector('[data-f="target_ref"]').value=s.target_ref||'';
+  el.querySelector('[data-del]').onclick=()=>{ CURRENT.steps.splice(i,1); renderSteps(CURRENT.steps); };
+  return el;
+}
+function esc(t){return (t+'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+
+function collectSteps(){
+  const cards=document.querySelectorAll('#steps .step');
+  return Array.from(cards).map((c,i)=>({
+    key:(CURRENT.steps[i]&&CURRENT.steps[i].key)|| (c.querySelector('[data-f=name]').value||'step').toLowerCase().replace(/[^a-z0-9]+/g,'-'),
+    name:c.querySelector('[data-f=name]').value,
+    body:c.querySelector('[data-f=body]').value,
+    type:c.querySelector('[data-f=type]').value,
+    target_ref:c.querySelector('[data-f=target_ref]').value||null,
+    target_note:c.querySelector('[data-f=target_note]').value,
+  }));
+}
+function addStep(){ CURRENT.steps.push({key:'',name:'New step',body:'',type:'tooltip',target_ref:null,target_note:''}); renderSteps(CURRENT.steps); }
+
+async function build(doUpload){
+  const out=document.getElementById('buildOut');
+  const payload={
+    token:CURRENT.token, flow_name:document.getElementById('flowName').value,
+    ending:{title:document.getElementById('endTitle').value, body:document.getElementById('endBody').value},
+    steps:collectSteps(), build:doUpload,
+  };
+  out.innerHTML='<span class="spin"></span> '+(doUpload?'Yükleniyor…':'Kaydediliyor…');
+  try{
+    const r=await fetch('/api/build',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    const d=await r.json();
+    if(!doUpload){ out.innerHTML='<span class="ok">✓ Kaydedildi: '+d.slug+'</span>'; return; }
+    out.innerHTML='<div class="'+(d.ok?'ok':'err')+'">'+(d.ok?'✓ Taslak oluşturuldu':'Hata')+' — '+esc(d.flow_name||'')+'</div><pre>'+esc(d.output||'')+'</pre>';
+  }catch(e){ out.innerHTML='<span class="err">Hata: '+e+'</span>'; }
+}
+
+// ---- flows ----
+async function loadFlows(){
+  const el=document.getElementById('flowList'); el.textContent='Yükleniyor…';
+  document.getElementById('flowDetail').innerHTML='';
+  const d=await (await fetch('/api/flows')).json();
+  if(!d.length){ el.textContent='Henüz flow yok.'; return; }
+  el.innerHTML=d.map(f=>`<div class="flowrow" onclick="showFlow('${f.slug}')"><span><b>${esc(f.name||f.slug)}</b> <span class="pill">${f.steps} adım</span></span><span class="small muted">${f.has_pdf?'📄':''} ${f.slug}</span></div>`).join('');
+}
+async function showFlow(slug){
+  const d=await (await fetch('/api/flow/'+slug)).json();
+  const steps=(d.steps||[]).map((s,i)=>`<div class="step"><h4><span>${i+1}. ${esc(s.name||'')}</span><span class="pill">${s.type||'tooltip'}</span></h4><div>${esc(s.body||'')}</div>${s.target&&s.target.note?'<div class="small muted" style="margin-top:6px">🎯 '+esc(s.target.note)+(s.target.ref?' ('+s.target.ref+')':'')+'</div>':''}</div>`).join('');
+  document.getElementById('flowDetail').innerHTML=`<div class="card"><h3 style="margin:0 0 10px">${esc((d.flow||{}).name||slug)}</h3>${steps}</div>`;
+  document.getElementById('flowDetail').scrollIntoView({behavior:'smooth'});
+}
+
+// ---- settings ----
+async function loadSettings(){
+  const d=await (await fetch('/api/settings')).json();
+  document.getElementById('setModel').value=d.model||'';
+  document.getElementById('setStatus').innerHTML=
+    'OpenAI anahtarı: '+(d.openai_set?'<span class="ok">tanımlı ✓</span>':'<span class="err">yok</span>')+
+    ' · Usertour token: '+(d.usertour_set?'<span class="ok">tanımlı ✓</span>':'<span class="err">yok</span>');
+}
+async function saveSettings(){
+  const payload={model:document.getElementById('setModel').value, openai_key:document.getElementById('setKey').value};
+  await fetch('/api/settings',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+  document.getElementById('setKey').value=''; loadSettings();
+}
+</script>
+</body>
+</html>

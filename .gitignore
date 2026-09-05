@@ -11,3 +11,6 @@ venv/
 build/
 *.log
 .DS_Store
+
+# Local web app uploads
+web/_uploads/
