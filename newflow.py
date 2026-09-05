@@ -29,23 +29,31 @@ def slugify(text: str) -> str:
     return re.sub(r"[^a-z0-9]+", "-", (text or "flow").lower()).strip("-") or "flow"
 
 
-def auto_number() -> int | None:
-    """Next Merch-M### from the Usertour project, or None if unavailable."""
+def _local_max() -> int:
+    biggest = 0
+    for d in Path("flows").glob("M*"):
+        m = re.match(r"M(\d+)", d.name)
+        if m:
+            biggest = max(biggest, int(m.group(1)))
+    return biggest
+
+
+def auto_number() -> int:
+    """Next Merch-M###, taking the max of local flows/ folders and Usertour."""
+    biggest = _local_max()
     try:
         from src.config import Config
         from src.client import UsertourClient
 
         client = UsertourClient(Config.from_env())
         pid = client.resolve_project_id()
-        biggest = 0
         for flow in client.list_content(pid, type="flow"):
             m = re.match(r"Merch-M(\d+)", flow.get("name") or "")
             if m:
                 biggest = max(biggest, int(m.group(1)))
-        return biggest + 1
     except Exception as exc:
-        print(f"(auto-numbering unavailable: {exc})")
-        return None
+        print(f"(Usertour auto-numbering unavailable, using local folders: {exc})")
+    return biggest + 1
 
 
 def main() -> int:
